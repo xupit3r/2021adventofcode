@@ -1,20 +1,14 @@
 #!/usr/local/bin/node
 
 const readData = require('./util/readData');
+const buildInstructions = require('./day2/buildInstructions');
 
-readData('day2', (err, instructions) => {
+readData('day2', (err, data) => {
   if (err) {
     return console.error(err);
   }
 
-  let position = instructions.map(val => {
-    let [ direction, distance ] = val.split(' ');
-
-    return {
-      direction: direction,
-      distance: +distance
-    };
-  }).reduce((coords, instruction) => {
+  let position = buildInstructions(data).reduce((coords, instruction) => {
     if (instruction.direction == 'down') {
       coords.depth += instruction.distance;
     } else if (instruction.direction === 'up') {
