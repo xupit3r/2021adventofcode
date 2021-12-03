@@ -2,7 +2,7 @@
 
 const readData = require('./util/readData');
 
-readData('day1a', (err, depths) => {
+readData('day1', (err, depths) => {
   if (err) {
     return console.error(err);
   }
