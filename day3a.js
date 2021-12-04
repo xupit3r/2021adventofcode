@@ -1,5 +1,6 @@
 #!/usr/local/bin/node
 
+const getBitCounts = require('./day3/getBitCounts');
 const readData = require('./util/readData');
 
 readData('day3', (err, data) => {
@@ -10,22 +11,7 @@ readData('day3', (err, data) => {
   let gamma = [];
   let episilon = [];
 
-  data.reduce((positions, number) => {
-    number.trim().split('').forEach((bit, i) => {
-      if (typeof positions[i] === 'undefined') {
-        positions[i] = [];
-      }
-
-      positions[i].push(bit);
-      return positions;
-    });
-
-    return positions;
-  }, []).map(position => {
-    return position.reduce((counts, bit) => {
-      return counts[bit]++, counts;
-    }, [0, 0]);
-  }).forEach(counts => {
+  getBitCounts(data).forEach(counts => {
     if (counts[0] > counts[1]) {
       gamma.push(0);
       episilon.push(1);
