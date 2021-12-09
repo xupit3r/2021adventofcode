@@ -13,13 +13,16 @@ module.exports = function bingo (data, bingoLength = 5) {
   let row = 0;
   data.slice(2).forEach((line) => {
     if (typeof boards[board] === 'undefined') {
-      boards[board] = {};
+      boards[board] = {
+        winner: false,
+        values: {}
+      };
     }
 
     if (line.trim().length > 0) {
       let values = line.trim().split(/\s+/);
       values.forEach((value, col) => {
-        boards[board][value] = {
+        boards[board].values[value] = {
           value: +value,
           marked: false,
           col: col,
@@ -40,59 +43,72 @@ module.exports = function bingo (data, bingoLength = 5) {
     draws: draws,
     boards: boards,
     winner: false,
-    run () {
+    winners: [],
+    run (last = false) {
       do {
         this.update();
-        this.winner = this.check();
-      } while (!this.winner);
+        this.check(true);
+      } while (this.drawIdx < this.draws.length);
 
-      return this.winner;
+      return (last
+        ? this.winners[this.winners.length - 1]
+        : this.winners[0]
+      );
+    },
+    isAll () {
+      return Object.keys(this.winners.reduce((h, v) => {
+        h[v.board] = true;
+        return h;
+      }, {})).length === this.boards.length;
     },
     update () {
       this.draw = this.draws[this.drawIdx++];
       this.boards.forEach(board => {
-        if (board[this.draw]) {
-          board[this.draw].marked = true;
+        if (board.values[this.draw]) {
+          board.values[this.draw].marked = true;
         }
       });
     },
     check () {
-      let winner = false;
-
-      for (let i = 0; i < this.boards.length && !winner; i++) {
+      for (let i = 0; i < this.boards.length; i++) {
         let board = this.boards[i];
-        let marked = Object.values(board).filter(value => value.marked);
+        let marked = Object.values(board.values)
+                           .filter(value => value.marked);
         
         let rows = [];
         let cols = [];
-        for (let j = 0; j < marked.length && !winner; j++) {
+        for (let j = 0; j < marked.length; j++) {
           let markedVal = marked[j];
+          let row = markedVal.row;
+          let col = markedVal.col;
 
-          if (typeof rows[markedVal.row] === 'undefined') {
-            rows[markedVal.row] = [];
+          if (typeof rows[row] === 'undefined') {
+            rows[row] = [];
           }
 
-          if (typeof cols[markedVal.col] === 'undefined') {
-            cols[markedVal.col] = [];
+          if (typeof cols[col] === 'undefined') {
+            cols[col] = [];
           }
 
-          rows[markedVal.row].push(markedVal.value);
-          cols[markedVal.col].push(markedVal.value);
+          rows[row].push(markedVal.value);
+          cols[col].push(markedVal.value);
 
-          if (rows[markedVal.row].length === bingoLength ||
-              cols[markedVal.col].length === bingoLength) {
-            winner = {
-              sum: Object.values(board).filter(value => !value.marked)
-                                       .map(v => v.value)
-                                       .reduce((s, v) => s += v),
+          if (!this.boards[i].winner &&
+              (rows[row].length === bingoLength ||
+               cols[col].length === bingoLength)) {
+            this.boards[i].winner = true;
+            this.winners.push({
+              board: i,
+              sum: Object.values(board.values)
+                          .filter(value => !value.marked)
+                          .map(v => v.value)
+                          .reduce((s, v) => s + v, 0),
               draw: this.draw,
 
-            };
+            });
           }
         }
       }
-
-      return winner;
     }
   };
 }
