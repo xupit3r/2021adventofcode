@@ -83,6 +83,9 @@ function more (start, end, current) {
  * 
  * @param {Array} vents array of vent lines, that should be used 
  * to create the diagram of vents
+ * @param {Boolean} considerAll if true, then all lines will be considered,
+ * otherwise only vertical or horizontals will be considered
+ * @returns a 2D matrix that is our diagram
  */
 module.exports = function createDiagram (vents, considerAll = false) {
   let max = getMax(vents);
