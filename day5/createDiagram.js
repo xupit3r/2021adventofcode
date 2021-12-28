@@ -43,12 +43,48 @@ function getEmptyMatrix (x, y) {
 }
 
 /**
+ * Given two numbers, this will return the next in the sequence
+ * 
+ * @param {Number} start   start number
+ * @param {Number} end     end number
+ * @param {Number} current current number
+ * @returns the next number to use
+ */
+function next (start, end, current) {
+  if (start === end) {
+    return start;
+  } else if (start > end) {
+    return current - 1;
+  } if (start < end) {
+    return current + 1;
+  }
+}
+
+/**
+ * Determines if we have more stuff to fill in
+ * 
+ * @param {Number} start   start number
+ * @param {Number} end     end number
+ * @param {Number} current current number
+ * @returns true if there is more to do, false otherwise
+ */
+function more (start, end, current) {
+  if (start === end) {
+    return false;
+  } else if (start > end) {
+    return current >= end;
+  } if (start < end) {
+    return current <= end;
+  }
+}
+
+/**
  * Draws (creates) a digram of vents.
  * 
  * @param {Array} vents array of vent lines, that should be used 
  * to create the diagram of vents
  */
-module.exports = function createDiagram (vents) {
+module.exports = function createDiagram (vents, considerAll = false) {
   let max = getMax(vents);
   let diagram = getEmptyMatrix(max.x, max.y);
 
@@ -56,19 +92,17 @@ module.exports = function createDiagram (vents) {
     let [x1, y1] = vent.start;
     let [x2, y2] = vent.end;
 
-    if (x1 === x2) {
-      let start = Math.min(y1, y2);
-      let distance = Math.max(y1, y2) - Math.min(y1, y2);
-
-      for (let i = 0; i <= distance; i++) {
-        diagram[start + i][x1]++;
-      }
-    } else if (y1 === y2) {
-      let start  = Math.min(x1, x2);
-      let distance = Math.max(x1, x2) - Math.min(x1, x2);
-
-      for (let i = 0; i <= distance; i++) {
-        diagram[y1][start + i]++;
+    if (considerAll || x1 === x2 || y1 === y2) {
+      let nextX = x1;
+      let nextY = y1;
+  
+      while (more(x1, x2, nextX) || 
+             more(y1, y2, nextY)) {
+  
+        diagram[nextY][nextX]++;
+  
+        nextX = next(x1, x2, nextX);
+        nextY = next(y1, y2, nextY);
       }
     }
   });
