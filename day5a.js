@@ -4,7 +4,6 @@ const readData = require('./util/readData');
 const parseVents = require('./day5/parseVents');
 const createDiagram = require('./day5/createDiagram');
 const countPoints = require('./day5/countPoints');
-const drawDiagram = require('./day5/drawDiagram');
 
 readData('day5', (err, data) => {
   if (err) {
