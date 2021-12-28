@@ -15,7 +15,5 @@ readData('day5', (err, data) => {
   let diagram = createDiagram(vents);
   let points = countPoints(diagram);
 
-  drawDiagram(diagram);
-
   console.log(`${points} points have 2 or more intersections`);
 });
