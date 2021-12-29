@@ -12,7 +12,7 @@ readData('day6', (err, data) => {
   }
 
   let fish = parseFish(data);
-  let projectedState = projectFish(fish, +days);
+  let numFish = projectFish(fish, +days);
 
-  console.log(`total fish after ${days} days is ${projectedState.length}`)
+  console.log(`total fish after ${days} days is ${numFish}`)
 });
